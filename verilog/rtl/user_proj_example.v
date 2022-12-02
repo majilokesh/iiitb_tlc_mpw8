@@ -69,6 +69,16 @@ module user_proj_example #(
     output [2:0] irq
 );
     wire clk;
+    wire rst_n;
+    wire [2:0] light_highway;
+    wire [2:0] light_farm;
+    wire C;
+
+    wire [`MPRJ_IO_PADS-1:0] io_in;
+    wire [`MPRJ_IO_PADS-1:0] io_out;
+    wire [`MPRJ_IO_PADS-1:0] io_oeb;
+	
+    /*wire clk;
     wire rst;
 
     wire [`MPRJ_IO_PADS-1:0] io_in;
@@ -87,17 +97,21 @@ module user_proj_example #(
     assign valid = wbs_cyc_i && wbs_stb_i; 
     assign wstrb = wbs_sel_i & {4{wbs_we_i}};
     assign wbs_dat_o = rdata;
-    assign wdata = wbs_dat_i;
+    assign wdata = wbs_dat_i;*/
 
     // IO
-    assign io_out = count;
-    assign io_oeb = {(`MPRJ_IO_PADS-1){rst}};
+    assign io_out[35:33] = light_highway;
+    assign io_out[32:30] = light_farm;
+    assign io_oeb = 0;
+    assign {clk,rst_n,C} = io_in[`MPRJ_IO_PADS-9:`MPRJ_IO_PADS-7]; 
+    //assign io_out = count;
+    //assign io_oeb = {(`MPRJ_IO_PADS-1){rst}};
 
     // IRQ
     assign irq = 3'b000;	// Unused
 
     // LA
-    assign la_data_out = {{(127-BITS){1'b0}}, count};
+   /* assign la_data_out = {{(127-BITS){1'b0}}, count};
     // Assuming LA probes [63:32] are for controlling the count register  
     assign la_write = ~la_oenb[63:32] & ~{BITS{valid}};
     // Assuming LA probes [65:64] are for controlling the count clk & reset  
@@ -117,11 +131,94 @@ module user_proj_example #(
         .la_write(la_write),
         .la_input(la_data_in[63:32]),
         .count(count)
-    );
+    );*/
+    
+    iiitb_tlc dut(light_highway, light_farm, C, clk, rst_n);
+    
+endmodule
+
+module iiitb_tlc(light_highway, light_farm, C, clk, rst_n);
+
+	parameter HGRE_FRED = 2'b00, // Highway green and farm red
+		  HYEL_FRED = 2'b01,// Highway yellow and farm red
+		  HRED_FGRE = 2'b10,// Highway red and farm green
+		  HRED_FYEL = 2'b11;// Highway red and farm yellow
+	input C, // sensor
+   	clk, // clock = 50 MHz
+   	rst_n; // reset active low
+
+	output reg[2:0] light_highway, light_farm; // output of lights
+	reg[1:0]  RED_count_en, YELLOW_count_en1, YELLOW_count_en2;
+	reg[1:0] state, next_state;
+	integer i;
+// next state
+	always @(posedge clk or negedge rst_n)
+		begin
+			if(~rst_n)
+			begin
+			RED_count_en<=0;YELLOW_count_en1<=0;YELLOW_count_en2<=0;
+			 state <= 2'b00;
+			end
+			else 
+			 state <= next_state; 
+		end
+// FSM
+	always @(*)
+		begin
+			case(state)
+				HGRE_FRED: 
+					begin // Green on highway and red on farm way
+
+					 RED_count_en <= 2'b01;
+					 YELLOW_count_en1 <= 2'b00;
+					 YELLOW_count_en2 <= 2'b00;
+					 light_highway <= 3'b001;
+					 light_farm <= 3'b100;
+					 if(C) next_state <= HYEL_FRED; 
+					 // if sensor detects vehicles on farm road, 
+
+					 else next_state <= HGRE_FRED;
+					end
+				HYEL_FRED: 
+					begin// yellow on highway and red on farm way
+
+					RED_count_en <= 2'b00;
+					YELLOW_count_en1 <= 2'b01;
+					YELLOW_count_en2 <= 2'b00;					  
+					light_highway <= 3'b010;
+					light_farm <= 3'b100;
+					next_state <= HRED_FGRE;
+
+					end
+				HRED_FGRE: 
+					begin// red on highway and green on farm way
+					
+					RED_count_en <= 2'b01;
+					YELLOW_count_en1 <= 2'b00;
+					YELLOW_count_en2 <= 2'b00;					 
+					light_highway <= 3'b100;
+					light_farm <= 3'b001; 
+					next_state <= HRED_FYEL;
+
+					end
+				HRED_FYEL:
+					begin// red on highway and yellow on farm way
+
+					RED_count_en <= 2'b00;
+					YELLOW_count_en1 <= 2'b00;
+					YELLOW_count_en2 <= 2'b01;					 
+					light_highway <= 3'b100;
+					light_farm <= 3'b010; 
+					next_state <= HGRE_FRED;
+
+					end
+				default: next_state <= HGRE_FRED;
+			endcase
+		end
 
 endmodule
 
-module counter #(
+/*module counter #(
     parameter BITS = 32
 )(
     input clk,
@@ -161,5 +258,6 @@ module counter #(
         end
     end
 
-endmodule
+endmodule*/
+
 `default_nettype wire
