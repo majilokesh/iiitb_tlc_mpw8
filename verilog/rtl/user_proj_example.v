@@ -103,7 +103,9 @@ module user_proj_example #(
     assign io_out[35:33] = light_highway;
     assign io_out[32:30] = light_farm;
     assign io_oeb = 0;
-    assign {clk,rst_n,C} = io_in[`MPRJ_IO_PADS-9:`MPRJ_IO_PADS-7]; 
+    assign clk = wb_clk_i;
+    assign rst_n = wb_rst_i;
+    assign C = io_in[`MPRJ_IO_PADS-9]; 
     //assign io_out = count;
     //assign io_oeb = {(`MPRJ_IO_PADS-1){rst}};
 
