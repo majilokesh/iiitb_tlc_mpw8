@@ -2,7 +2,7 @@
     "DESIGN_NAME": "user_proj_example",
     "DESIGN_IS_CORE": 0,
     "VERILOG_FILES": ["dir::../../verilog/rtl/defines.v", "dir::../../verilog/rtl/user_proj_example.v"],
-    "CLOCK_PERIOD": 10,
+    "CLOCK_PERIOD": 20,
     "CLOCK_PORT": "wb_clk_i",
     "CLOCK_NET": "counter.clk",
     "FP_SIZING": "absolute",
@@ -18,20 +18,20 @@
         "FP_CORE_UTIL": 45,
         "RT_MAX_LAYER": "met4",
         "scl::sky130_fd_sc_hd": {
-            "CLOCK_PERIOD": 10
+            "CLOCK_PERIOD": 20
         },
         "scl::sky130_fd_sc_hdll": {
-            "CLOCK_PERIOD": 10
+            "CLOCK_PERIOD": 20
         },
         "scl::sky130_fd_sc_hs": {
-            "CLOCK_PERIOD": 8
+            "CLOCK_PERIOD": 18
         },
         "scl::sky130_fd_sc_ls": {
-            "CLOCK_PERIOD": 10,
+            "CLOCK_PERIOD": 20,
             "SYNTH_MAX_FANOUT": 5
         },
         "scl::sky130_fd_sc_ms": {
-            "CLOCK_PERIOD": 10
+            "CLOCK_PERIOD": 20
         }
     },
     "pdk::gf180mcuC": {
