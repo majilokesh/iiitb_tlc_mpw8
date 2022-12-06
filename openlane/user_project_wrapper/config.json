@@ -1,7 +1,7 @@
 {
     "DESIGN_NAME": "user_project_wrapper",
     "VERILOG_FILES": ["dir::../../verilog/rtl/defines.v", "dir::../../verilog/rtl/user_project_wrapper.v"],
-    "CLOCK_PERIOD": 10,
+    "CLOCK_PERIOD": 20,
     "CLOCK_PORT": "user_clock2",
     "CLOCK_NET": "mprj.clk",
     "FP_PDN_MACRO_HOOKS": "mprj vccd1 vssd1 vccd1 vssd1",
@@ -53,20 +53,20 @@
         "DIE_AREA": "0 0 2920 3520",
         "FP_DEF_TEMPLATE": "dir::fixed_dont_change/user_project_wrapper.def",
         "scl::sky130_fd_sc_hd": {
-            "CLOCK_PERIOD": 10
+            "CLOCK_PERIOD": 20
         },
         "scl::sky130_fd_sc_hdll": {
-            "CLOCK_PERIOD": 10
+            "CLOCK_PERIOD": 20
         },
         "scl::sky130_fd_sc_hs": {
-            "CLOCK_PERIOD": 8
+            "CLOCK_PERIOD": 18
         },
         "scl::sky130_fd_sc_ls": {
-            "CLOCK_PERIOD": 10,
+            "CLOCK_PERIOD": 20,
             "SYNTH_MAX_FANOUT": 5
         },
         "scl::sky130_fd_sc_ms": {
-            "CLOCK_PERIOD": 10
+            "CLOCK_PERIOD": 20
         }
      },
     "pdk::gf180mcuC": {
